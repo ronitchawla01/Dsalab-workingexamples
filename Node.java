@@ -1,142 +1,112 @@
-class Node{
-    int key;
-    Node left , right ;
-    public Node(int item)
-    {
-        key=item;
-        left=right=null;
+class Node {
+    int key, height;
+    Node left, right;
+
+    Node(int d) {
+        key = d;
+        height = 1;
     }
 }
- class BST {
 
+class AVLTree {
     Node root;
-    BST(int key)
-    {
-        root = new Node(key);
+
+    int height(Node N) {
+        if (N == null)
+            return 0;
+        return N.height;
     }
 
-    BST()
-    {
-        root = null;
+    int max(int a, int b) {
+        return (a > b) ? a : b;
     }
 
-    public void printPostOrder(Node node)
-    {
-        if(node==null)
-        {
-            return ;
+    Node rightRotate(Node y) {
+        Node x = y.left;
+        Node T2 = x.right;
+
+        x.right = y;
+        y.left = T2;
+
+        y.height = max(height(y.left), height(y.right)) + 1;
+        x.height = max(height(x.left), height(x.right)) + 1;
+
+        return x;
+    }
+
+    Node leftRotate(Node x) {
+        Node y = x.right;
+        Node T2 = y.left;
+
+        y.left = x;
+        x.right = T2;
+
+        x.height = max(height(x.left), height(x.right)) + 1;
+        y.height = max(height(y.left), height(y.right)) + 1;
+
+        return y;
+    }
+
+    int getBalance(Node N) {
+        if (N == null)
+            return 0;
+        return height(N.left) - height(N.right);
+    }
+
+    Node insert(Node node, int key) {
+        if (node == null)
+            return (new Node(key));
+
+        if (key < node.key)
+            node.left = insert(node.left, key);
+        else if (key > node.key)
+            node.right = insert(node.right, key);
+        else
+            return node;
+
+        node.height = 1 + max(height(node.left), height(node.right));
+
+        int balance = getBalance(node);
+
+        if (balance > 1 && key < node.left.key)
+            return rightRotate(node);
+
+        if (balance < -1 && key > node.right.key)
+            return leftRotate(node);
+
+        if (balance > 1 && key > node.left.key) {
+            node.left = leftRotate(node.left);
+            return rightRotate(node);
         }
-        printPostOrder(node.left);
-        printPostOrder(node.right);
 
-        System.out.println(node.key+" ");
-    }
-
-    public void printInOrder(Node node)
-    {
-        if(node==null)
-        {
-            return;
+        if (balance < -1 && key < node.right.key) {
+            node.right = rightRotate(node.right);
+            return leftRotate(node);
         }
 
-        printInOrder(node.left);
-
-        System.out.println(node.key+" ");
-
-        printInOrder(node.right);
+        return node;
     }
 
-    public void printPreOrder(Node node)
-    {
-        if(node==null)
-        {
-            return;
+    void preOrder(Node node) {
+        if (node != null) {
+            System.out.print(node.key + " ");
+            preOrder(node.left);
+            preOrder(node.right);
         }
-
-        System.out.println(node.key+" ");
-
-        printPreOrder(node.left);
-
-        printPreOrder(node.right);
     }
+
     public static void main(String[] args) {
+        AVLTree tree = new AVLTree();
 
-        BST tree = new BST();
-        tree.root = new Node(4);
-        Node a = new Node(7);
-        tree.root.left = a;
+        tree.root = tree.insert(tree.root, 10);
+        tree.root = tree.insert(tree.root, 20);
+        tree.root = tree.insert(tree.root, 30);
+        tree.root = tree.insert(tree.root, 40);
+        tree.root = tree.insert(tree.root, 50);
+        tree.root = tree.insert(tree.root, 25);
 
-        Node b = new Node(5);
-        tree.root.right = b;
-
-        a.left = new Node(8);
-        a.right = new Node(3);
-
-        b.left = new Node(4);
-        b.right = new Node(1);
-
-        System.out.println("pre-order");
-        tree.printPreOrder(tree.root);
-
-        System.out.println("post-order");
-        tree.printPostOrder(tree.root);
-
-        System.out.println("In-order");
-        tree.printInOrder(tree.root);
-
+        System.out.println("Preorder traversal of constructed AVL tree is : ");
+        tree.preOrder(tree.root);
     }
-    public Node search(Node root,int key)
-    {
-        if(root==null || root.key==key)
-            return root;
-
-        if(root.key>key)
-            return search(root.left,key);
-        return search(root.right,key);
-
-    }
-    Node insertRec(Node root,int key){
-        if(root==null){
-            root=new Node(key);
-            return root;
-        }
-        else{
-            if(key<root. key)
-                root.left=insertRec(root.left,key);
-            else if(key>root.key)
-                root.right = insertRec(root.right,key);
-        }
-        return root;
-    }
-    Node deleteRec(Node root,int key)
-    {
-        if(root==null)
-            return root;
-        if(key<root.key)
-            root.left=deleteRec(root.left,key);
-        else if(key>root.key)
-            root.right=deleteRec(root.right,key);
-        else{
-            if(root.left==null)
-                return root.right;
-            else if(root.right==null)
-                return root.left;
-
-            root.key = minValue(root.right);
-            root.right = deleteRec(root.right, root.key);
-        }
-        return root;
-    }
-    int minValue(Node root)
-    {
-        int minv = root.key;
-        while(root.left!=null)
-        {
-            minv = root.left.key;
-            root = root.left;
-        }
-        return minv;
-
-    }
-
 }
+
