@@ -1,70 +1,142 @@
-class Node {
+class Node{
     int key;
-    Node left, right;
-
-    public Node(int item) {
-        key = item;
-        left = right = null;
+    Node left , right ;
+    public Node(int item)
+    {
+        key=item;
+        left=right=null;
     }
 }
+ class BST {
 
-class BinaryTree {
     Node root;
-
-    BinaryTree(int Key) {
-        root = new Node(Key);
+    BST(int key)
+    {
+        root = new Node(key);
     }
-    BinaryTree() {
+
+    BST()
+    {
         root = null;
     }
 
-    void printPreorder(Node node) {
-        if (node == null) {
-            return;
+    public void printPostOrder(Node node)
+    {
+        if(node==null)
+        {
+            return ;
         }
-        System.out.print(node.key + " ");
-        printPreorder(node.left);
-        printPreorder(node.right);
+        printPostOrder(node.left);
+        printPostOrder(node.right);
+
+        System.out.println(node.key+" ");
     }
 
-    void printInorder(Node node) {
-        if (node == null) {
+    public void printInOrder(Node node)
+    {
+        if(node==null)
+        {
             return;
         }
-        printInorder(node.left);
-        System.out.print(node.key + " ");
-        printInorder(node.right);
+
+        printInOrder(node.left);
+
+        System.out.println(node.key+" ");
+
+        printInOrder(node.right);
     }
 
-    void printPostorder(Node node) {
-        if (node == null) {
+    public void printPreOrder(Node node)
+    {
+        if(node==null)
+        {
             return;
         }
-        printPostorder(node.left);
-        printPostorder(node.right);
-        System.out.print(node.key + " ");
-    }
 
+        System.out.println(node.key+" ");
+
+        printPreOrder(node.left);
+
+        printPreOrder(node.right);
+    }
     public static void main(String[] args) {
-        BinaryTree tree = new BinaryTree();
-        tree.root = new Node(1); // Create root node
 
-        Node a = new Node(2);
+        BST tree = new BST();
+        tree.root = new Node(4);
+        Node a = new Node(7);
         tree.root.left = a;
 
-        Node b = new Node(3);
+        Node b = new Node(5);
         tree.root.right = b;
 
-        a.left = new Node(4);
-        a.right = new Node(5);
+        a.left = new Node(8);
+        a.right = new Node(3);
 
-        System.out.println("Pre-order traversal:");
-        tree.printPreorder(tree.root);
+        b.left = new Node(4);
+        b.right = new Node(1);
 
-        System.out.println("\nIn-order traversal:");
-        tree.printInorder(tree.root);
+        System.out.println("pre-order");
+        tree.printPreOrder(tree.root);
 
-        System.out.println("\nPost-order traversal:");
-        tree.printPostorder(tree.root);
+        System.out.println("post-order");
+        tree.printPostOrder(tree.root);
+
+        System.out.println("In-order");
+        tree.printInOrder(tree.root);
+
     }
+    public Node search(Node root,int key)
+    {
+        if(root==null || root.key==key)
+            return root;
+
+        if(root.key>key)
+            return search(root.left,key);
+        return search(root.right,key);
+
+    }
+    Node insertRec(Node root,int key){
+        if(root==null){
+            root=new Node(key);
+            return root;
+        }
+        else{
+            if(key<root. key)
+                root.left=insertRec(root.left,key);
+            else if(key>root.key)
+                root.right = insertRec(root.right,key);
+        }
+        return root;
+    }
+    Node deleteRec(Node root,int key)
+    {
+        if(root==null)
+            return root;
+        if(key<root.key)
+            root.left=deleteRec(root.left,key);
+        else if(key>root.key)
+            root.right=deleteRec(root.right,key);
+        else{
+            if(root.left==null)
+                return root.right;
+            else if(root.right==null)
+                return root.left;
+
+            root.key = minValue(root.right);
+            root.right = deleteRec(root.right, root.key);
+        }
+        return root;
+    }
+    int minValue(Node root)
+    {
+        int minv = root.key;
+        while(root.left!=null)
+        {
+            minv = root.left.key;
+            root = root.left;
+        }
+        return minv;
+
+    }
+
 }
